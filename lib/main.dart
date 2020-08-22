@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_expense_planner/transaction.dart';
+import 'package:flutter_expense_planner/widgets/new_transaction.dart';
+import 'package:flutter_expense_planner/widgets/user_transaction.dart';
+import 'package:flutter_expense_planner/models/transaction.dart';
+
 
 void main() {
   runApp(MyApp());
@@ -15,70 +18,71 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class MyHomePage extends StatelessWidget {
-  final List<Transaction> transaction = [
+/** stateless widget means we can't change it or we can change it but it will never be reflected in user interface. ***/
+class MyHomePage extends StatefulWidget {
+  @override
+  MyHomePageState createState() => MyHomePageState();
+}
+class  MyHomePageState extends State<MyHomePage>{
+
+  final List<Transaction> userTranscation = [
     Transaction(
         id: 't1', title: 'New Shoes', amount: 68.21, date: DateTime.now()),
     Transaction(
-        id: 't1',
-        title: 'Daily Groceries',
-        amount: 68.21,
-        date: DateTime.now()),
+        id: 't1', title: 'New Shoes', amount: 68.21, date: DateTime.now()),
   ];
 
+  void addNewTransaction(String txTitle, double txAmount) {
+    final newTx = Transaction(
+        title: txTitle,
+        amount: txAmount,
+        date: DateTime.now(),
+        id: DateTime.now().toString());
+    setState(() {
+      userTranscation.add(newTx);
+    });
+  }
+
+  void startAddNewTranscation(BuildContext ctx) {
+    showModalBottomSheet(context: ctx, builder : (_){
+         return NewTransaction(addNewTransaction);
+    });
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Flutter App'),
-      ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: <Widget>[
-          Container(
-            width: double.infinity,
-            child: Card(
-              child: Container(
-                  width: double.infinity,
-                  color: Colors.blue,
-                  child: Text('CHART!!')),
-              elevation: 5,
-            ),
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: transaction.map((tx) {
-              return Card(
-                  child: Row(
-                children: <Widget>[
-                  Container(
-                    margin: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                    decoration: BoxDecoration(
-                        border: Border.all(
-                      color: Colors.purple,
-                      width: 2,
-                    )),
-                    padding: EdgeInsets.all(10),
-                    child: Text(
-                      '\$${tx.amount}',
-                      style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black,),
-                    ),
-                  ),
-                  Column(
-                    children: <Widget>[
-                      Text(tx.title),
-                      Text(
-                        tx.date.toString(),
-                        style: TextStyle(color: Colors.red,),
-                      ),
-                    ],
-                  )
-                ],
-              ));
-            }).toList(),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.add),
+            onPressed: () =>  startAddNewTranscation(context),
           )
         ],
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            Container(
+              width: double.infinity,
+              child: Card(
+                child: Container(
+                    width: double.infinity,
+                    color: Colors.blue,
+                    child: Text('CHART!!')),
+                elevation: 5,
+              ),
+            ),
+            UserTransactions(),
+          ],
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.add),
+        onPressed: () =>  startAddNewTranscation(context),
       ),
     );
   }
