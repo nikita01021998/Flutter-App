@@ -1,88 +1,95 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_expense_planner/widgets/new_transaction.dart';
-import 'package:flutter_expense_planner/widgets/user_transaction.dart';
-import 'package:flutter_expense_planner/models/transaction.dart';
 
+import './widgets/new_transaction.dart';
+import './widgets/transaction_list.dart';
+import './models/transaction.dart';
 
-void main() {
-  runApp(MyApp());
-}
+void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'FlutterApp',
+      title: 'Personal Expenses',
+      theme: ThemeData(
+        primarySwatch: Colors.purple,
+        accentColor: Colors.amber,
+      ),
       home: MyHomePage(),
     );
   }
 }
 
-/** stateless widget means we can't change it or we can change it but it will never be reflected in user interface. ***/
 class MyHomePage extends StatefulWidget {
+  // String titleInput;
+  // String amountInput;
   @override
-  MyHomePageState createState() => MyHomePageState();
+  _MyHomePageState createState() => _MyHomePageState();
 }
-class  MyHomePageState extends State<MyHomePage>{
 
-  final List<Transaction> userTranscation = [
-    Transaction(
-        id: 't1', title: 'New Shoes', amount: 68.21, date: DateTime.now()),
-    Transaction(
-        id: 't1', title: 'New Shoes', amount: 68.21, date: DateTime.now()),
+class _MyHomePageState extends State<MyHomePage> {
+  final List<Transaction> _userTransactions = [
   ];
 
-  void addNewTransaction(String txTitle, double txAmount) {
+  void _addNewTransaction(String txTitle, double txAmount) {
     final newTx = Transaction(
-        title: txTitle,
-        amount: txAmount,
-        date: DateTime.now(),
-        id: DateTime.now().toString());
+      title: txTitle,
+      amount: txAmount,
+      date: DateTime.now(),
+      id: DateTime.now().toString(),
+    );
+
     setState(() {
-      userTranscation.add(newTx);
+      _userTransactions.add(newTx);
     });
   }
 
-  void startAddNewTranscation(BuildContext ctx) {
-    showModalBottomSheet(context: ctx, builder : (_){
-         return NewTransaction(addNewTransaction);
-    });
+  void _startAddNewTransaction(BuildContext ctx) {
+    showModalBottomSheet(
+      context: ctx,
+      builder: (_) {
+        return GestureDetector(
+          onTap: () {},
+          child: NewTransaction(_addNewTransaction),
+          behavior: HitTestBehavior.opaque,
+        );
+      },
+    );
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Flutter App'),
+        title: Text('Personal Expenses'),
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.add),
-            onPressed: () =>  startAddNewTranscation(context),
-          )
+            onPressed: () => _startAddNewTransaction(context),
+          ),
         ],
       ),
       body: SingleChildScrollView(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
+          // mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
             Container(
               width: double.infinity,
               child: Card(
-                child: Container(
-                    width: double.infinity,
-                    color: Colors.blue,
-                    child: Text('CHART!!')),
+                color: Colors.blue,
+                child: Text('CHART!'),
                 elevation: 5,
               ),
             ),
-            UserTransactions(),
+            TransactionList(_userTransactions),
           ],
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
-        onPressed: () =>  startAddNewTranscation(context),
+        onPressed: () => _startAddNewTransaction(context),
       ),
     );
   }
