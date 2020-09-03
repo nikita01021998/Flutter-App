@@ -4,6 +4,7 @@ import './widgets/new_transaction.dart';
 import './widgets/transaction_list.dart';
 import './models/transaction.dart';
 import './widgets/chart.dart';
+
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
@@ -28,21 +29,20 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final List<Transaction> _userTransactions = [
-  ];
+  final List<Transaction> _userTransactions = [];
 
-  List<Transaction> get recentTransactionList{
+  List<Transaction> get recentTransactionList {
     return _userTransactions.where((tx) {
-      return tx.date.isAfter(
-        DateTime.now().subtract(Duration(days: 7)));
+      return tx.date.isAfter(DateTime.now().subtract(Duration(days: 7)));
     }).toList();
   }
 
-  void _addNewTransaction(String txTitle, double txAmount) {
+  void _addNewTransaction(
+      String txTitle, double txAmount, DateTime choosendate) {
     final newTx = Transaction(
       title: txTitle,
       amount: txAmount,
-      date: DateTime.now(),
+      date: choosendate,
       id: DateTime.now().toString(),
     );
 
@@ -62,6 +62,14 @@ class _MyHomePageState extends State<MyHomePage> {
         );
       },
     );
+  }
+
+  void deleteTransaction(String id) {
+    setState(() {
+      _userTransactions.remove((txt) {
+        return txt.id == id;
+      });
+    });
   }
 
   @override
@@ -90,7 +98,7 @@ class _MyHomePageState extends State<MyHomePage> {
 //                elevation: 5,
 //              ),
 //            ),
-            TransactionList(_userTransactions),
+            TransactionList(_userTransactions, deleteTransaction),
           ],
         ),
       ),
